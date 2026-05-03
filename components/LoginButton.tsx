@@ -14,13 +14,11 @@ export default function LoginButton() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
-
       await fetch("/api/auth/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
       });
-
       router.push("/calendar");
     } catch (error) {
       console.error("Błąd logowania:", error);

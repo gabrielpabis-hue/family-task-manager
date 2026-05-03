@@ -28,10 +28,7 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
 
-    const isAdminPath = ADMIN_PATHS.some((p) =>
-      req.nextUrl.pathname.startsWith(p)
-    );
-
+    const isAdminPath = ADMIN_PATHS.some((p) => req.nextUrl.pathname.startsWith(p));
     if (isAdminPath && role !== "admin") {
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }

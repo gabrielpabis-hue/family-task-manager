@@ -6,9 +6,6 @@ const MULTIPLIERS: Record<QualityScore, number> = {
   excellent: 3,
 };
 
-export function calcFinalPoints(
-  basePoints: number,
-  score: QualityScore
-): number {
+export function calcFinalPoints(basePoints: number, score: QualityScore): number {
   return basePoints * MULTIPLIERS[score];
 }
