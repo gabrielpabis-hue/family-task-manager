@@ -1,24 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
-import { adminAuth } from "@/lib/firebase-admin";
+import { getUserRole } from "@/lib/roles";
 
-export async function POST(req: NextRequest) {
+const ADMIN_PATHS = ["/goals"];
+const PROTECTED_PATHS = ["/calendar", "/goals", "/finances"];
+
+export async function middleware(req: NextRequest) {
+  const sessionCookie = req.cookies.get("session")?.value;
+
+  if (!sessionCookie) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
   try {
-    const { idToken } = await req.json();
-    const expiresIn = 60 * 60 * 24 * 7 * 1000; // 7 dni
-    const sessionCookie = await adminAuth.createSessionCookie(idToken, {
-      expiresIn,
+    const verifyRes = await fetch(new URL("/api/auth/verify", req.url), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: sessionCookie }),
     });
 
-    const response = NextResponse.json({ status: "success" });
-    response.cookies.set("session", sessionCookie, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
-    });
+    if (!verifyRes.ok) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    const { email } = await verifyRes.json();
+    const role = getUserRole(email);
+
+    if (!role) {
+      return NextResponse.redirect(new URL("/unauthorized", req.url));
+    }
+
+    const isAdminPath = ADMIN_PATHS.some((p) =>
+      req.nextUrl.pathname.startsWith(p)
+    );
+
+    if (isAdminPath && role !== "admin") {
+      return NextResponse.redirect(new URL("/unauthorized", req.url));
+    }
+
+    const response = NextResponse.next();
+    response.headers.set("x-user-role", role);
+    response.headers.set("x-user-email", email);
     return response;
   } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 }
+
+export const config = {
+  matcher: ["/calendar/:path*", "/goals/:path*", "/finances/:path*"],
+};
