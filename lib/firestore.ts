@@ -18,8 +18,8 @@ export interface Task {
   dueDate: string;
   status: TaskStatus;
   basePoints: number;
-  qualityScore?: QualityScore;
-  finalPoints?: number;
+  qualityScore?: QualityScore | null;
+finalPoints?: number | null;
   isParentTask: boolean;
   createdAt: Date;
 }

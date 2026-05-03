@@ -38,19 +38,19 @@ export default function GoalForm() {
     try {
       const user = auth.currentUser;
       if (!user?.email) throw new Error("Brak użytkownika");
-      await createTask({
-        title,
-        description,
-        assignedTo,
-        createdBy: user.email,
-        priority,
-        dueDate,
-        basePoints,
-        status: "pending",
-        isParentTask: false,
-        qualityScore: undefined,
-        finalPoints: undefined,
-      });
+await createTask({
+  title,
+  description,
+  assignedTo,
+  createdBy: user.email,
+  priority,
+  dueDate,
+  basePoints,
+  status: "pending",
+  isParentTask: false,
+  qualityScore: null,
+  finalPoints: null,
+});
       setTitle("");
       setDescription("");
       setDueDate("");
