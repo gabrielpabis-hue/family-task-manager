@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getUserRole } from "@/lib/roles";
 
 const ADMIN_PATHS = ["/goals"];
-const PROTECTED_PATHS = ["/calendar", "/goals", "/finances"];
 
 export async function middleware(req: NextRequest) {
   const sessionCookie = req.cookies.get("session")?.value;
