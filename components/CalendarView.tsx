@@ -104,7 +104,11 @@ function getMonthGrid(date: Date): (Date | null)[] {
 
 function getTasksForDate(tasks: Task[], date: Date): Task[] {
   const str = toDateStr(date);
-  return tasks.filter((t) => t.dueDate === str);
+  return tasks.filter((t) => {
+    if (t.dueDate > str) return false;
+    if (!t.endDate) return t.dueDate === str;
+    return str <= t.endDate;
+  });
 }
 
 function TaskTile({

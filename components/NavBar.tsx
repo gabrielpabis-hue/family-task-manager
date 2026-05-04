@@ -8,7 +8,7 @@ import { signOut } from "firebase/auth";
 const links = [
   { href: "/calendar", label: "📅 Kalendarz" },
   { href: "/goals", label: "🎯 Cele" },
-  { href: "/finances", label: "💰 Finanse" },
+  { href: "/finances", label: "🏆 Nagrody" },
 ];
 
 export default function NavBar() {

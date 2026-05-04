@@ -16,13 +16,21 @@ export interface Task {
   createdBy: string;
   priority: Priority;
   dueDate: string;
+  endDate?: string;
   status: TaskStatus;
   basePoints: number;
   qualityScore?: QualityScore | null;
-finalPoints?: number | null;
+  finalPoints?: number | null;
   isParentTask: boolean;
   recurring?: boolean;
   createdAt: Date;
+}
+
+export interface PointEntry {
+  id: string;
+  userId: string;
+  points: number;
+  awardedAt: Date;
 }
 
 export async function createTask(data: Omit<Task, "id" | "createdAt">) {
@@ -100,4 +108,19 @@ export async function settleBalance(email: string, settledBy: string) {
   snap.docs.forEach((d) => batch.update(d.ref, { settled: true }));
   batch.update(balanceRef, { currentBalance: 0, lastSettledAt: serverTimestamp() });
   await batch.commit();
+}
+
+export async function getAllPointsHistory(): Promise<PointEntry[]> {
+  const snap = await getDocs(collection(db, "pointsHistory"));
+  return snap.docs
+    .map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        userId: data.userId as string,
+        points: data.points as number,
+        awardedAt: (data.awardedAt?.toDate?.() ?? new Date()) as Date,
+      };
+    })
+    .sort((a, b) => a.awardedAt.getTime() - b.awardedAt.getTime());
 }

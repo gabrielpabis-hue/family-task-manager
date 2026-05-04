@@ -11,10 +11,15 @@ const CHILDREN = [
 ];
 
 const PRIORITY_POINTS: Record<Priority, number> = {
-  normal: 1,
-  important: 2,
-  critical: 3,
+  normal: 5,
+  important: 10,
+  critical: 20,
 };
+
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
 function GoalFormContent() {
   const router = useRouter();
@@ -25,8 +30,9 @@ function GoalFormContent() {
   const [description, setDescription] = useState("");
   const [assignedTo, setAssignedTo] = useState(CHILDREN[0].email);
   const [priority, setPriority] = useState<Priority>("normal");
-  const [dueDate, setDueDate] = useState("");
-  const [basePoints, setBasePoints] = useState(1);
+  const [dueDate, setDueDate] = useState(todayStr());
+  const [endDate, setEndDate] = useState("");
+  const [basePoints, setBasePoints] = useState(PRIORITY_POINTS.normal);
   const [recurring, setRecurring] = useState(false);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -55,6 +61,7 @@ function GoalFormContent() {
       setAssignedTo(t.assignedTo);
       setPriority(t.priority);
       setDueDate(t.dueDate);
+      setEndDate(t.endDate ?? "");
       setBasePoints(t.basePoints);
       setRecurring(t.recurring ?? false);
       setEditTitle(t.title);
@@ -65,9 +72,10 @@ function GoalFormContent() {
   function resetForm() {
     setTitle("");
     setDescription("");
-    setDueDate("");
+    setDueDate(todayStr());
+    setEndDate("");
     setPriority("normal");
-    setBasePoints(1);
+    setBasePoints(PRIORITY_POINTS.normal);
     setRecurring(false);
     setTemplateId("");
   }
@@ -88,7 +96,8 @@ function GoalFormContent() {
     setPriority(t.priority);
     setBasePoints(t.basePoints);
     setRecurring(t.recurring ?? false);
-    setDueDate("");
+    setDueDate(todayStr());
+    setEndDate("");
   }
 
   function cancelEdit() {
@@ -112,6 +121,7 @@ function GoalFormContent() {
           assignedTo,
           priority,
           dueDate,
+          endDate: endDate || undefined,
           basePoints,
           recurring,
         });
@@ -128,6 +138,7 @@ function GoalFormContent() {
           createdBy: user.email,
           priority,
           dueDate,
+          endDate: endDate || undefined,
           basePoints,
           status: "pending",
           isParentTask: false,
@@ -193,7 +204,7 @@ function GoalFormContent() {
             ))}
           </select>
           {templateId && (
-            <p className="text-xs text-blue-500">Formularz uzupełniony — ustaw nową datę i kliknij Dodaj cel.</p>
+            <p className="text-xs text-blue-500">Formularz uzupełniony — sprawdź datę i kliknij Dodaj cel.</p>
           )}
         </div>
       )}
@@ -242,9 +253,13 @@ function GoalFormContent() {
               </select>
             </div>
           </div>
+
+          {/* Two date fields */}
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-600 font-medium">Termin</label>
+              <label className="text-xs text-gray-600 font-medium">
+                Data założenia <span className="text-red-400">*</span>
+              </label>
               <input
                 type="date"
                 required
@@ -255,18 +270,36 @@ function GoalFormContent() {
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs text-gray-600 font-medium">
-                Punkty bazowe
-                <span className="text-gray-400 font-normal ml-1">(podpowiedź: {PRIORITY_POINTS[priority]})</span>
+                Maks. data realizacji <span className="text-gray-400 font-normal">(opcjonalna)</span>
               </label>
               <input
-                type="number"
-                min={1}
-                max={100}
-                value={basePoints}
-                onChange={(e) => setBasePoints(Number(e.target.value))}
+                type="date"
+                value={endDate}
+                min={dueDate}
+                onChange={(e) => setEndDate(e.target.value)}
                 className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400"
               />
             </div>
+          </div>
+          {endDate && dueDate && (
+            <p className="text-xs text-blue-500 -mt-1">
+              📅 Cel aktywny przez {Math.round((new Date(endDate).getTime() - new Date(dueDate).getTime()) / 86400000) + 1} dni w kalendarzu
+            </p>
+          )}
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs text-gray-600 font-medium">
+              Punkty bazowe
+              <span className="text-gray-400 font-normal ml-1">(podpowiedź: {PRIORITY_POINTS[priority]})</span>
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={100}
+              value={basePoints}
+              onChange={(e) => setBasePoints(Number(e.target.value))}
+              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400"
+            />
           </div>
 
           {/* Recurring checkbox */}
