@@ -1,5 +1,5 @@
 import {
-  collection, addDoc, updateDoc, doc, query, where,
+  collection, addDoc, updateDoc, deleteDoc, doc, query, where,
   orderBy, getDocs, getDoc, serverTimestamp, increment, setDoc, writeBatch,
 } from "firebase/firestore";
 import { db } from "./firebase";
@@ -21,6 +21,7 @@ export interface Task {
   qualityScore?: QualityScore | null;
 finalPoints?: number | null;
   isParentTask: boolean;
+  recurring?: boolean;
   createdAt: Date;
 }
 
@@ -38,6 +39,10 @@ export async function getAllTasks(): Promise<Task[]> {
   const q = query(collection(db, "tasks"), orderBy("dueDate", "asc"));
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Task));
+}
+
+export async function deleteTask(taskId: string) {
+  await deleteDoc(doc(db, "tasks", taskId));
 }
 
 export async function markTaskDone(taskId: string) {
