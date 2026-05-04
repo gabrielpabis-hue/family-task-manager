@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { auth } from "@/lib/firebase";
-import { createTask, getAllTasks, Priority, Task } from "@/lib/firestore";
+import { createTask, getAllTasks, getTask, updateTask, Priority, Task } from "@/lib/firestore";
 
 const CHILDREN = [
   { email: "igipabis@gmail.com", name: "Igi" },
@@ -15,7 +16,11 @@ const PRIORITY_POINTS: Record<Priority, number> = {
   critical: 3,
 };
 
-export default function GoalForm() {
+function GoalFormContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("edit");
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [assignedTo, setAssignedTo] = useState(CHILDREN[0].email);
@@ -26,6 +31,8 @@ export default function GoalForm() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [loadingEdit, setLoadingEdit] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
 
   const [templates, setTemplates] = useState<Task[]>([]);
   const [templateId, setTemplateId] = useState("");
@@ -33,6 +40,37 @@ export default function GoalForm() {
   useEffect(() => {
     getAllTasks().then(setTemplates).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!editId) {
+      resetForm();
+      setEditTitle("");
+      return;
+    }
+    setLoadingEdit(true);
+    getTask(editId).then((t) => {
+      if (!t) return;
+      setTitle(t.title);
+      setDescription(t.description ?? "");
+      setAssignedTo(t.assignedTo);
+      setPriority(t.priority);
+      setDueDate(t.dueDate);
+      setBasePoints(t.basePoints);
+      setRecurring(t.recurring ?? false);
+      setEditTitle(t.title);
+      setTemplateId("");
+    }).catch(() => {}).finally(() => setLoadingEdit(false));
+  }, [editId]);
+
+  function resetForm() {
+    setTitle("");
+    setDescription("");
+    setDueDate("");
+    setPriority("normal");
+    setBasePoints(1);
+    setRecurring(false);
+    setTemplateId("");
+  }
 
   function handlePriorityChange(p: Priority) {
     setPriority(p);
@@ -53,6 +91,12 @@ export default function GoalForm() {
     setDueDate("");
   }
 
+  function cancelEdit() {
+    router.push("/goals");
+    resetForm();
+    setEditTitle("");
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -60,29 +104,41 @@ export default function GoalForm() {
     try {
       const user = auth.currentUser;
       if (!user?.email) throw new Error("Brak użytkownika");
-      await createTask({
-        title,
-        description,
-        assignedTo,
-        createdBy: user.email,
-        priority,
-        dueDate,
-        basePoints,
-        status: "pending",
-        isParentTask: false,
-        recurring,
-        qualityScore: null,
-        finalPoints: null,
-      });
-      setTitle("");
-      setDescription("");
-      setDueDate("");
-      setPriority("normal");
-      setBasePoints(1);
-      setRecurring(false);
-      setTemplateId("");
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+
+      if (editId) {
+        await updateTask(editId, {
+          title,
+          description,
+          assignedTo,
+          priority,
+          dueDate,
+          basePoints,
+          recurring,
+        });
+        setSuccess(true);
+        setTimeout(() => {
+          setSuccess(false);
+          router.push("/goals");
+        }, 2000);
+      } else {
+        await createTask({
+          title,
+          description,
+          assignedTo,
+          createdBy: user.email,
+          priority,
+          dueDate,
+          basePoints,
+          status: "pending",
+          isParentTask: false,
+          recurring,
+          qualityScore: null,
+          finalPoints: null,
+        });
+        resetForm();
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      }
     } catch (err) {
       setError("Błąd zapisu. Sprawdź połączenie i spróbuj ponownie.");
       console.error(err);
@@ -93,8 +149,32 @@ export default function GoalForm() {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col gap-4">
-      {/* Template picker */}
-      {templates.length > 0 && (
+
+      {/* Edit mode banner */}
+      {editId && (
+        <div className="flex items-start justify-between gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-blue-500 text-lg shrink-0">✏️</span>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Tryb edycji</p>
+              {loadingEdit ? (
+                <p className="text-sm text-blue-400">Ładowanie...</p>
+              ) : (
+                <p className="text-sm font-semibold text-blue-800 truncate">{editTitle}</p>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={cancelEdit}
+            className="shrink-0 text-xs text-blue-400 hover:text-blue-600 bg-white border border-blue-200 rounded-lg px-2.5 py-1.5 font-medium transition-all"
+          >
+            Anuluj
+          </button>
+        </div>
+      )}
+
+      {/* Template picker — only in create mode */}
+      {!editId && templates.length > 0 && (
         <div className="flex flex-col gap-1.5">
           <label className="text-xs text-gray-600 font-medium">🔄 Użyj poprzedniego celu jako szablon</label>
           <select
@@ -119,7 +199,9 @@ export default function GoalForm() {
       )}
 
       <div>
-        <h2 className="font-semibold text-gray-800 mb-4 text-base">➕ Nowy cel</h2>
+        <h2 className="font-semibold text-gray-800 mb-4 text-base">
+          {editId ? "✏️ Edytuj cel" : "➕ Nowy cel"}
+        </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             required
@@ -210,7 +292,7 @@ export default function GoalForm() {
           )}
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || loadingEdit}
             className="bg-blue-500 text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-blue-600 active:bg-blue-700 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
           >
             {saving ? (
@@ -218,13 +300,27 @@ export default function GoalForm() {
                 <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Zapisuję...
               </>
-            ) : "Dodaj cel"}
+            ) : editId ? "Zapisz zmiany" : "Dodaj cel"}
           </button>
           {success && (
-            <p className="text-green-600 text-sm text-center bg-green-50 rounded-xl py-2">✅ Cel dodany!</p>
+            <p className="text-green-600 text-sm text-center bg-green-50 rounded-xl py-2">
+              {editId ? "✅ Cel zaktualizowany!" : "✅ Cel dodany!"}
+            </p>
           )}
         </form>
       </div>
     </div>
+  );
+}
+
+export default function GoalForm() {
+  return (
+    <Suspense fallback={
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 text-gray-400 text-sm">
+        Ładowanie...
+      </div>
+    }>
+      <GoalFormContent />
+    </Suspense>
   );
 }

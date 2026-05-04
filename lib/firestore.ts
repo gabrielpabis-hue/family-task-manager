@@ -45,6 +45,16 @@ export async function deleteTask(taskId: string) {
   await deleteDoc(doc(db, "tasks", taskId));
 }
 
+export async function getTask(taskId: string): Promise<Task | null> {
+  const snap = await getDoc(doc(db, "tasks", taskId));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() } as Task;
+}
+
+export async function updateTask(taskId: string, data: Partial<Omit<Task, "id" | "createdAt">>) {
+  await updateDoc(doc(db, "tasks", taskId), data as Record<string, unknown>);
+}
+
 export async function markTaskDone(taskId: string) {
   await updateDoc(doc(db, "tasks", taskId), { status: "done" });
 }

@@ -156,7 +156,7 @@ function TaskTile({
       {isAdmin && task.status === "pending" && (
         <div className="flex gap-1.5 shrink-0">
           <button
-            onClick={() => router.push("/goals")}
+            onClick={() => router.push(`/goals?edit=${task.id}`)}
             className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-sm hover:bg-blue-50 hover:border-blue-300 transition-all"
             title="Edytuj"
           >
