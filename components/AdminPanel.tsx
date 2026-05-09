@@ -25,11 +25,11 @@ const ROLE_OPTIONS: UserRole[] = ["familyAdmin", "parent", "child"];
 
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+    <div className="fixed inset-0 bg-black/40 dark:bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-md shadow-2xl border border-white dark:border-gray-700">
         <div className="flex items-center justify-between mb-5">
-          <h3 className="font-bold text-gray-800 text-base">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+          <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base">{title}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl leading-none">×</button>
         </div>
         {children}
       </div>
@@ -39,11 +39,11 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
 
 function ConfirmModal({ message, onConfirm, onCancel }: { message: string; onConfirm: () => void; onCancel: () => void }) {
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-        <p className="text-gray-700 mb-5 text-sm">{message}</p>
+    <div className="fixed inset-0 bg-black/40 dark:bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-white dark:border-gray-700">
+        <p className="text-gray-700 dark:text-gray-300 mb-5 text-sm">{message}</p>
         <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 border border-gray-200 rounded-xl py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50">Anuluj</button>
+          <button onClick={onCancel} className="flex-1 border border-gray-200 dark:border-gray-600 rounded-xl py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">Anuluj</button>
           <button onClick={onConfirm} className="flex-1 bg-red-500 text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-red-600">Potwierdź</button>
         </div>
       </div>
@@ -103,10 +103,12 @@ function UsersTab({ families }: { families: FamilyDoc[] }) {
 
   if (loading) return <p className="text-gray-400 text-sm">Ładowanie...</p>;
 
+  const inputCls = "border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-blue-400 bg-white dark:bg-gray-800";
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500">{users.length} użytkowników</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{users.length} użytkowników</p>
         <button onClick={openAdd} className="bg-blue-500 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-blue-600 transition-all">
           + Dodaj użytkownika
         </button>
@@ -117,24 +119,24 @@ function UsersTab({ families }: { families: FamilyDoc[] }) {
         const initial = u.displayName?.[0]?.toUpperCase() ?? "?";
         const roleColors: Record<UserRole, string> = { superAdmin: "from-yellow-400 to-orange-400", familyAdmin: "from-violet-400 to-purple-400", parent: "from-blue-400 to-cyan-400", child: "from-pink-400 to-rose-400" };
         return (
-          <div key={u.email} className="bg-gray-50/80 rounded-xl p-4 flex items-center justify-between gap-3 hover:bg-white hover:shadow-sm transition-all border border-transparent hover:border-gray-100">
+          <div key={u.email} className="bg-gray-50/80 dark:bg-gray-800/60 rounded-xl p-4 flex items-center justify-between gap-3 hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all border border-transparent hover:border-gray-100 dark:hover:border-gray-700">
             <div className="flex items-center gap-3 min-w-0">
               <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${roleColors[u.role]} flex items-center justify-center text-white text-sm font-bold shrink-0`}>
                 {initial}
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-gray-800 text-sm">{u.displayName}</p>
-                <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm">{u.displayName}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{u.email}</p>
                 <div className="flex gap-2 mt-0.5">
-                  <span className="text-xs text-gray-500">{ROLE_LABELS[u.role]}</span>
-                  {fam && <span className="text-xs text-violet-500">· {fam.name}</span>}
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{ROLE_LABELS[u.role]}</span>
+                  {fam && <span className="text-xs text-violet-500 dark:text-violet-400">· {fam.name}</span>}
                 </div>
               </div>
             </div>
             {u.email !== userDoc?.email && (
               <div className="flex gap-1.5 shrink-0">
-                <button onClick={() => openEdit(u)} className="text-xs px-3 py-1.5 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all">✏️</button>
-                <button onClick={() => setDeleting(u)} className="text-xs px-3 py-1.5 border border-gray-200 rounded-xl hover:bg-red-50 hover:border-red-200 transition-all">🗑️</button>
+                <button onClick={() => openEdit(u)} className="text-xs px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-blue-200 transition-all">✏️</button>
+                <button onClick={() => setDeleting(u)} className="text-xs px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-200 transition-all">🗑️</button>
               </div>
             )}
           </div>
@@ -145,15 +147,15 @@ function UsersTab({ families }: { families: FamilyDoc[] }) {
         <Modal title={editing ? "Edytuj użytkownika" : "Nowy użytkownik"} onClose={() => { setShowAdd(false); setEditing(null); }}>
           <div className="flex flex-col gap-3">
             <input disabled={!!editing} placeholder="E-mail" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400 disabled:bg-gray-50" />
+              className={`${inputCls} disabled:bg-gray-50 dark:disabled:bg-gray-700`} />
             <input placeholder="Imię / nazwa" value={form.displayName} onChange={(e) => setForm((p) => ({ ...p, displayName: e.target.value }))}
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400" />
+              className={inputCls} />
             <select value={form.role} onChange={(e) => setForm((p) => ({ ...p, role: e.target.value as UserRole }))}
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400">
+              className={inputCls}>
               {ROLE_OPTIONS.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
             </select>
             <select value={form.familyId} onChange={(e) => setForm((p) => ({ ...p, familyId: e.target.value }))}
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400">
+              className={inputCls}>
               <option value="">— brak rodziny —</option>
               {families.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
             </select>
@@ -233,7 +235,7 @@ function FamiliesTab({ families, setFamilies }: { families: FamilyDoc[]; setFami
   return (
     <div className="flex flex-col gap-3">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500">{families.length} rodzin</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{families.length} rodzin</p>
         <button onClick={openAdd} className="bg-blue-500 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-blue-600 transition-all">
           + Dodaj rodzinę
         </button>
@@ -242,25 +244,25 @@ function FamiliesTab({ families, setFamilies }: { families: FamilyDoc[]; setFami
       {families.map((f) => {
         const members = allUsers.filter((u) => u.familyId === f.id);
         return (
-          <div key={f.id} className="bg-gray-50 rounded-xl p-4">
+          <div key={f.id} className="bg-gray-50 dark:bg-gray-800/60 rounded-xl p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="font-semibold text-gray-800">{f.name}</p>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="font-semibold text-gray-800 dark:text-gray-100">{f.name}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                   {f.familyAdminEmail ? `Admin: ${f.familyAdminEmail}` : "Brak admina rodziny"}
                 </p>
-                <p className="text-xs text-gray-400">{members.length} członków</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">{members.length} członków</p>
                 <div className="flex flex-wrap gap-1 mt-2">
                   {members.map((m) => (
-                    <span key={m.email} className="text-xs bg-white border border-gray-200 rounded-lg px-2 py-0.5">
-                      {m.displayName} <span className="text-gray-400">({ROLE_LABELS[m.role]})</span>
+                    <span key={m.email} className="text-xs bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-0.5 text-gray-700 dark:text-gray-300">
+                      {m.displayName} <span className="text-gray-400 dark:text-gray-500">({ROLE_LABELS[m.role]})</span>
                     </span>
                   ))}
                 </div>
               </div>
               <div className="flex gap-1.5 shrink-0">
-                <button onClick={() => openEdit(f)} className="text-xs px-3 py-1.5 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all">✏️</button>
-                <button onClick={() => setDeleting(f)} className="text-xs px-3 py-1.5 border border-gray-200 rounded-xl hover:bg-red-50 hover:border-red-200 transition-all">🗑️</button>
+                <button onClick={() => openEdit(f)} className="text-xs px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-blue-200 transition-all">✏️</button>
+                <button onClick={() => setDeleting(f)} className="text-xs px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-200 transition-all">🗑️</button>
               </div>
             </div>
           </div>
@@ -271,11 +273,11 @@ function FamiliesTab({ families, setFamilies }: { families: FamilyDoc[]; setFami
         <Modal title={editing ? "Edytuj rodzinę" : "Nowa rodzina"} onClose={() => { setShowAdd(false); setEditing(null); }}>
           <div className="flex flex-col gap-3">
             <input placeholder="Nazwa rodziny" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400" />
+              className="border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-blue-400 bg-white dark:bg-gray-800" />
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-500">Admin rodziny (opcjonalnie)</label>
+              <label className="text-xs text-gray-500 dark:text-gray-400">Admin rodziny (opcjonalnie)</label>
               <select value={form.familyAdminEmail} onChange={(e) => setForm((p) => ({ ...p, familyAdminEmail: e.target.value }))}
-                className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400">
+                className="border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-blue-400 bg-white dark:bg-gray-800">
                 <option value="">— brak —</option>
                 {eligibleAdmins.filter((u) => !editing || u.familyId === editing.id || !u.familyId).map((u) => (
                   <option key={u.email} value={u.email}>{u.displayName} ({u.email})</option>
@@ -351,23 +353,23 @@ function RequestsTab({ families, setFamilies }: { families: FamilyDoc[]; setFami
       {visible.length === 0 && <p className="text-gray-400 text-sm py-4 text-center">Brak zgłoszeń</p>}
 
       {visible.map((req) => (
-        <div key={req.id} className={`rounded-xl p-4 border ${req.status === "pending" ? "bg-yellow-50 border-yellow-200" : req.status === "approved" ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-200"}`}>
+        <div key={req.id} className={`rounded-xl p-4 border ${req.status === "pending" ? "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-800" : req.status === "approved" ? "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800" : "bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700"}`}>
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-semibold text-gray-600">
+                <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
                   {req.type === "newFamily" ? "🏠 Nowa rodzina" : "🗑️ Likwidacja rodziny"}
                 </span>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${req.status === "pending" ? "bg-yellow-200 text-yellow-800" : req.status === "approved" ? "bg-green-200 text-green-800" : "bg-gray-200 text-gray-600"}`}>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${req.status === "pending" ? "bg-yellow-200 dark:bg-yellow-900/60 text-yellow-800 dark:text-yellow-300" : req.status === "approved" ? "bg-green-200 dark:bg-green-900/60 text-green-800 dark:text-green-300" : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}>
                   {req.status === "pending" ? "Oczekuje" : req.status === "approved" ? "Zatwierdzone" : "Odrzucone"}
                 </span>
               </div>
-              <p className="font-semibold text-gray-800 text-sm">
+              <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm">
                 {req.type === "newFamily" ? req.familyName : families.find((f) => f.id === req.familyId)?.name ?? "Nieznana rodzina"}
               </p>
-              <p className="text-xs text-gray-500">{req.requesterName} · {req.requesterEmail}</p>
-              {req.message && <p className="text-xs text-gray-400 mt-1 italic">"{req.message}"</p>}
-              <p className="text-xs text-gray-300 mt-1">{req.createdAt.toLocaleDateString("pl-PL")}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{req.requesterName} · {req.requesterEmail}</p>
+              {req.message && <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 italic">"{req.message}"</p>}
+              <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">{req.createdAt.toLocaleDateString("pl-PL")}</p>
             </div>
             {req.status === "pending" && (
               <div className="flex flex-col gap-1.5 shrink-0">
@@ -421,28 +423,28 @@ function MyFamilyTab({ family }: { family: FamilyDoc | null }) {
   return (
     <div className="flex flex-col gap-3">
       {family && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
-          <p className="font-semibold text-blue-800">{family.name}</p>
-          <p className="text-xs text-blue-500">{members.length} członków</p>
+        <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl px-4 py-3">
+          <p className="font-semibold text-blue-800 dark:text-blue-200">{family.name}</p>
+          <p className="text-xs text-blue-500 dark:text-blue-400">{members.length} członków</p>
         </div>
       )}
       <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500">Członkowie rodziny</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Członkowie rodziny</p>
         <button onClick={openAdd} className="bg-blue-500 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-blue-600 transition-all">
           + Dodaj członka
         </button>
       </div>
 
       {members.map((m) => (
-        <div key={m.email} className="bg-gray-50 rounded-xl p-4 flex items-center justify-between gap-3">
+        <div key={m.email} className="bg-gray-50 dark:bg-gray-800/60 rounded-xl p-4 flex items-center justify-between gap-3">
           <div>
-            <p className="font-semibold text-gray-800 text-sm">{m.displayName}</p>
-            <p className="text-xs text-gray-400">{m.email}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{ROLE_LABELS[m.role]}</p>
+            <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm">{m.displayName}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">{m.email}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{ROLE_LABELS[m.role]}</p>
           </div>
           {m.email !== userDoc?.email && (
             <button onClick={() => { setForm({ email: m.email, displayName: m.displayName, role: m.role }); setEditing(m); }}
-              className="text-xs px-3 py-1.5 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all">✏️</button>
+              className="text-xs px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-blue-200 transition-all">✏️</button>
           )}
         </div>
       ))}
@@ -451,11 +453,11 @@ function MyFamilyTab({ family }: { family: FamilyDoc | null }) {
         <Modal title={editing ? "Edytuj członka" : "Dodaj członka rodziny"} onClose={() => { setShowAdd(false); setEditing(null); }}>
           <div className="flex flex-col gap-3">
             <input disabled={!!editing} placeholder="E-mail" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400 disabled:bg-gray-50" />
+              className="border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-blue-400 bg-white dark:bg-gray-800 disabled:bg-gray-50 dark:disabled:bg-gray-700" />
             <input placeholder="Imię / nazwa" value={form.displayName} onChange={(e) => setForm((p) => ({ ...p, displayName: e.target.value }))}
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400" />
+              className="border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-blue-400 bg-white dark:bg-gray-800" />
             <select value={form.role} onChange={(e) => setForm((p) => ({ ...p, role: e.target.value as UserRole }))}
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400">
+              className="border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-blue-400 bg-white dark:bg-gray-800">
               {memberRoleOptions.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
             </select>
             <button onClick={handleSave} className="bg-blue-500 text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-blue-600">
@@ -508,9 +510,9 @@ function SettingsTab({ family }: { family: FamilyDoc | null }) {
           <p className="text-xs text-gray-400">ID: {family.id}</p>
         </div>
       )}
-      <div className="bg-red-50 border border-red-200 rounded-xl p-5">
-        <p className="font-semibold text-red-800 mb-1">⚠️ Likwidacja rodziny</p>
-        <p className="text-sm text-red-600 mb-4">Zgłoszenie trafi do super administratora, który zdecyduje o likwidacji.</p>
+      <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl p-5">
+        <p className="font-semibold text-red-800 dark:text-red-300 mb-1">⚠️ Likwidacja rodziny</p>
+        <p className="text-sm text-red-600 dark:text-red-400 mb-4">Zgłoszenie trafi do super administratora, który zdecyduje o likwidacji.</p>
         <button onClick={() => setShowConfirm(true)} className="bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-red-600 transition-all">
           Zgłoś wniosek o likwidację
         </button>
@@ -519,12 +521,12 @@ function SettingsTab({ family }: { family: FamilyDoc | null }) {
       {showConfirm && (
         <Modal title="Zgłoszenie likwidacji rodziny" onClose={() => setShowConfirm(false)}>
           <div className="flex flex-col gap-3">
-            <p className="text-sm text-gray-600">Czy na pewno chcesz zgłosić wniosek o likwidację rodziny <strong>{family?.name}</strong>?</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Czy na pewno chcesz zgłosić wniosek o likwidację rodziny <strong>{family?.name}</strong>?</p>
             <textarea
               placeholder="Wiadomość do administratora (opcjonalnie)"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-red-400 resize-none h-24"
+              className="border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-red-400 resize-none h-24 bg-white dark:bg-gray-800"
             />
             <button onClick={handleRequest} className="bg-red-500 text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-red-600">
               Wyślij zgłoszenie
@@ -585,13 +587,13 @@ export default function AdminPanel() {
   return (
     <div className="flex flex-col gap-4">
       {/* Tab bar */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-1.5 flex gap-1">
+      <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl border border-white dark:border-gray-700 shadow-lg shadow-violet-100/30 dark:shadow-gray-900/30 p-1.5 flex gap-1">
         {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => setActiveTab(t.key)}
             className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all relative ${
-              activeTab === t.key ? "bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-md shadow-violet-200/50" : "text-gray-500 hover:bg-gray-50"
+              activeTab === t.key ? "bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-md shadow-violet-200/50" : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
             }`}
           >
             {t.label}
@@ -605,7 +607,7 @@ export default function AdminPanel() {
       </div>
 
       {/* Tab content */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-5">
+      <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl border border-white dark:border-gray-700 shadow-lg shadow-violet-100/30 dark:shadow-gray-900/30 p-5">
         {activeTab === "users" && <UsersTab families={families} />}
         {activeTab === "families" && <FamiliesTab families={families} setFamilies={setFamilies} />}
         {activeTab === "requests" && <RequestsTab families={families} setFamilies={setFamilies} />}

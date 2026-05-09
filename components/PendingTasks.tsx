@@ -33,26 +33,26 @@ export default function PendingTasks() {
   if (loading) return null;
   if (tasks.length === 0)
     return (
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-5">
-        <h2 className="font-semibold text-gray-700 mb-2">⏳ Oczekuje na ocenę</h2>
-        <p className="text-gray-400 text-sm">Brak zadań do oceny.</p>
+      <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl border border-white dark:border-gray-700 shadow-lg shadow-violet-100/30 dark:shadow-gray-900/30 p-5">
+        <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-2">⏳ Oczekuje na ocenę</h2>
+        <p className="text-gray-400 dark:text-gray-500 text-sm">Brak zadań do oceny.</p>
       </div>
     );
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 shadow-sm p-5">
-      <h2 className="font-semibold text-gray-700 mb-4">⏳ Oczekuje na ocenę</h2>
+    <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl border border-white dark:border-gray-700 shadow-lg shadow-violet-100/30 dark:shadow-gray-900/30 p-5">
+      <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-4">⏳ Oczekuje na ocenę</h2>
       <div className="flex flex-col gap-3">
         {tasks.map((task) => (
-          <div key={task.id} className="border border-gray-100 rounded-xl p-4 flex flex-col gap-3">
+          <div key={task.id} className="border border-gray-100 dark:border-gray-700 rounded-xl p-4 flex flex-col gap-3">
             <div>
-              <p className="font-medium text-gray-700">{task.title}</p>
-              <p className="text-xs text-gray-400">{task.assignedTo.split("@")[0]} · {task.basePoints} pkt bazowo</p>
+              <p className="font-medium text-gray-700 dark:text-gray-200">{task.title}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{task.assignedTo.split("@")[0]} · {task.basePoints} pkt bazowo</p>
             </div>
             <div className="flex gap-2">
               {QUALITY_OPTIONS.map((opt) => (
                 <button key={opt.value} onClick={() => handleApprove(task.id, opt.value)}
-                  className="flex-1 text-xs py-2 rounded-xl border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all">
+                  className="flex-1 text-xs py-2 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-blue-300 dark:hover:border-blue-700 transition-all">
                   {opt.label}
                 </button>
               ))}

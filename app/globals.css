@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Class-based dark mode for Tailwind v4 */
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f8f7ff;
   --foreground: #1e1b4b;
@@ -16,6 +19,12 @@ body {
   background-attachment: fixed;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+html.dark body {
+  color: #e2e0f9;
+  background: linear-gradient(135deg, #0f0e17 0%, #0d1117 45%, #130f1f 100%);
 }
 
 /* Custom scrollbar */
@@ -23,6 +32,8 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #a78bfa; }
+html.dark ::-webkit-scrollbar-thumb { background: #4c1d95; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #6d28d9; }
 
 /* Floating login shapes animation */
 @keyframes float {

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useUser } from "@/lib/userContext";
+import { useTheme, Theme } from "@/lib/themeContext";
 import { getPendingRequestCount } from "@/lib/families";
 
 const links = [
@@ -14,10 +15,17 @@ const links = [
   { href: "/finances", label: "🏆", full: "Nagrody" },
 ];
 
+const THEME_OPTIONS: { value: Theme; icon: string; title: string }[] = [
+  { value: "light", icon: "☀️", title: "Jasny" },
+  { value: "dark",  icon: "🌙", title: "Ciemny" },
+  { value: "auto",  icon: "🖥️", title: "Systemowy" },
+];
+
 export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
   const { isAdmin, isSuperAdmin, userDoc } = useUser();
+  const { theme, setTheme } = useTheme();
   const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
@@ -34,8 +42,8 @@ export default function NavBar() {
   const initial = userDoc?.displayName?.[0]?.toUpperCase() ?? "?";
 
   return (
-    <nav className="sticky top-0 z-40 bg-white/75 backdrop-blur-xl border-b border-white/60 shadow-sm shadow-violet-100/40">
-      <div className="max-w-2xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+    <nav className="sticky top-0 z-40 bg-white/75 dark:bg-gray-900/80 backdrop-blur-xl border-b border-white/60 dark:border-gray-700/60 shadow-sm shadow-violet-100/40 dark:shadow-gray-900/40">
+      <div className="max-w-2xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
 
         {/* Logo */}
         <Link href="/calendar" className="flex items-center gap-2 shrink-0">
@@ -48,7 +56,7 @@ export default function NavBar() {
         </Link>
 
         {/* Main links */}
-        <div className="flex items-center gap-1 bg-white/60 rounded-2xl p-1 border border-white/80 shadow-inner shadow-violet-50">
+        <div className="flex items-center gap-1 bg-white/60 dark:bg-gray-800/60 rounded-2xl p-1 border border-white/80 dark:border-gray-700 shadow-inner shadow-violet-50 dark:shadow-gray-900/30">
           {links.map((link) => {
             const active = pathname.startsWith(link.href);
             return (
@@ -58,7 +66,7 @@ export default function NavBar() {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                   active
                     ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-sm shadow-violet-200"
-                    : "text-gray-500 hover:text-gray-700 hover:bg-white/80"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white/80 dark:hover:bg-gray-700/80"
                 }`}
               >
                 <span>{link.label}</span>
@@ -69,14 +77,33 @@ export default function NavBar() {
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
+
+          {/* Theme toggle */}
+          <div className="flex items-center gap-0.5 bg-white/60 dark:bg-gray-800/60 rounded-xl p-0.5 border border-white/80 dark:border-gray-700">
+            {THEME_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setTheme(opt.value)}
+                title={opt.title}
+                className={`w-7 h-7 flex items-center justify-center rounded-lg text-sm transition-all ${
+                  theme === opt.value
+                    ? "bg-gradient-to-br from-violet-500 to-blue-500 shadow-sm"
+                    : "hover:bg-white/80 dark:hover:bg-gray-700/80"
+                }`}
+              >
+                {opt.icon}
+              </button>
+            ))}
+          </div>
+
           {isAdmin && (
             <Link
               href="/admin"
               className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                 pathname.startsWith("/admin")
                   ? "bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-sm"
-                  : "text-gray-500 hover:text-violet-600 hover:bg-violet-50"
+                  : "text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-950/40"
               }`}
             >
               ⚙️
@@ -96,7 +123,7 @@ export default function NavBar() {
             </div>
             <button
               onClick={handleLogout}
-              className="text-xs text-gray-400 hover:text-red-400 transition-all font-medium hidden sm:block"
+              className="text-xs text-gray-400 dark:text-gray-500 hover:text-red-400 transition-all font-medium hidden sm:block"
             >
               Wyloguj
             </button>

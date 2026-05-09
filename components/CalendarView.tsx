@@ -18,32 +18,32 @@ interface UserTheme {
 const USER_THEMES: Record<string, UserTheme> = {
   "igipabis@gmail.com": {
     icon: "🔥",
-    bg: { normal: "bg-orange-50", important: "bg-amber-100", critical: "bg-red-100" },
+    bg: { normal: "bg-orange-50 dark:bg-orange-950/40", important: "bg-amber-100 dark:bg-amber-950/40", critical: "bg-red-100 dark:bg-red-950/40" },
     border: { normal: "border-l-orange-400", important: "border-l-amber-500", critical: "border-l-red-600" },
-    text: "text-orange-900",
+    text: "text-orange-900 dark:text-orange-300",
     dot: "bg-orange-400",
   },
   "gabik.pabik@gmail.com": {
     icon: "✨",
-    bg: { normal: "bg-pink-50", important: "bg-purple-50", critical: "bg-fuchsia-100" },
+    bg: { normal: "bg-pink-50 dark:bg-pink-950/40", important: "bg-purple-50 dark:bg-purple-950/40", critical: "bg-fuchsia-100 dark:bg-fuchsia-950/40" },
     border: { normal: "border-l-pink-300", important: "border-l-purple-400", critical: "border-l-fuchsia-500" },
-    text: "text-pink-900",
+    text: "text-pink-900 dark:text-pink-300",
     dot: "bg-pink-400",
   },
 };
 
 const DEFAULT_THEME: UserTheme = {
   icon: "📋",
-  bg: { normal: "bg-gray-50", important: "bg-yellow-50", critical: "bg-red-50" },
+  bg: { normal: "bg-gray-50 dark:bg-gray-800/60", important: "bg-yellow-50 dark:bg-yellow-950/40", critical: "bg-red-50 dark:bg-red-950/40" },
   border: { normal: "border-l-gray-400", important: "border-l-yellow-400", critical: "border-l-red-400" },
-  text: "text-gray-800",
+  text: "text-gray-800 dark:text-gray-200",
   dot: "bg-gray-400",
 };
 
 const STATUS_BADGE: Record<string, string> = {
-  pending: "bg-gray-100 text-gray-500",
-  done: "bg-amber-100 text-amber-700",
-  approved: "bg-green-100 text-green-700",
+  pending: "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400",
+  done: "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400",
+  approved: "bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-400",
 };
 const STATUS_LABELS: Record<string, string> = {
   pending: "Do zrobienia",
@@ -143,7 +143,7 @@ function TaskTile({
       <div className="flex-1 min-w-0">
         <p className={`font-bold text-sm ${theme.text} leading-snug`}>{task.title}</p>
         {task.description && (
-          <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{task.description}</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 line-clamp-2">{task.description}</p>
         )}
         <div className="flex flex-wrap items-center gap-1.5 mt-2">
           <span className="text-xs">{PRIORITY_ICONS[task.priority]}</span>
@@ -151,23 +151,23 @@ function TaskTile({
             {STATUS_LABELS[task.status]}
           </span>
           {task.recurring && (
-            <span className="text-xs bg-blue-50 text-blue-500 px-2 py-0.5 rounded-full">🔁 Cykliczny</span>
+            <span className="text-xs bg-blue-50 dark:bg-blue-950/40 text-blue-500 dark:text-blue-400 px-2 py-0.5 rounded-full">🔁 Cykliczny</span>
           )}
-          <span className="text-xs text-gray-400">{task.basePoints} pkt</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500">{task.basePoints} pkt</span>
         </div>
       </div>
       {isAdmin && task.status === "pending" && (
         <div className="flex gap-1.5 shrink-0">
           <button
             onClick={() => router.push(`/goals?edit=${task.id}`)}
-            className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-sm hover:bg-blue-50 hover:border-blue-300 transition-all"
+            className="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl text-sm hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-blue-300 transition-all"
             title="Edytuj"
           >
             ✏️
           </button>
           <button
             onClick={() => onDelete(task.id)}
-            className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-sm hover:bg-red-50 hover:border-red-300 transition-all"
+            className="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl text-sm hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-300 transition-all"
             title="Usuń"
           >
             🗑️
@@ -180,16 +180,16 @@ function TaskTile({
 
 function DeleteModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
-      <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full">
-        <h3 className="font-bold text-gray-800 mb-2">Usuń cel</h3>
-        <p className="text-sm text-gray-500 mb-5">
+    <div className="fixed inset-0 bg-black/40 dark:bg-black/60 flex items-center justify-center z-50 px-4">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-2xl max-w-sm w-full border border-white dark:border-gray-700">
+        <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-2">Usuń cel</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
           Czy na pewno chcesz usunąć ten cel? Tej operacji nie można cofnąć.
         </p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 border border-gray-200 rounded-xl py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-all"
+            className="flex-1 border border-gray-200 dark:border-gray-600 rounded-xl py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
           >
             Anuluj
           </button>
@@ -281,13 +281,13 @@ export default function CalendarView() {
     return (
       <div className="flex flex-col gap-3">
         {dayTasks.length === 0 ? (
-          <div className="bg-white/80 rounded-2xl border border-gray-100 p-10 text-center flex flex-col items-center gap-3">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-100 to-blue-100 flex items-center justify-center text-3xl">
+          <div className="bg-white/80 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-700 p-10 text-center flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-100 to-blue-100 dark:from-violet-950/60 dark:to-blue-950/60 flex items-center justify-center text-3xl">
               📭
             </div>
             <div>
-              <p className="font-semibold text-gray-500">Wolny dzień!</p>
-              <p className="text-gray-400 text-sm mt-0.5">Brak zadań na ten dzień</p>
+              <p className="font-semibold text-gray-500 dark:text-gray-400">Wolny dzień!</p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm mt-0.5">Brak zadań na ten dzień</p>
             </div>
           </div>
         ) : (
@@ -314,7 +314,7 @@ export default function CalendarView() {
                   className={`text-center py-2 px-1 rounded-xl mb-1.5 cursor-pointer transition-all ${
                     isToday
                       ? "bg-blue-500 text-white"
-                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`}
                   onClick={() => { setCurrentDate(new Date(day)); setView("day"); }}
                 >
@@ -343,7 +343,7 @@ export default function CalendarView() {
       <div>
         <div className="grid grid-cols-7 mb-1">
           {WEEK_DAYS_SHORT.map((d) => (
-            <div key={d} className="text-center text-xs font-semibold text-gray-400 py-1">
+            <div key={d} className="text-center text-xs font-semibold text-gray-400 dark:text-gray-500 py-1">
               {d}
             </div>
           ))}
@@ -362,11 +362,11 @@ export default function CalendarView() {
                 onClick={() => { setCurrentDate(new Date(day)); setView("day"); }}
                 className={`rounded-xl p-1.5 cursor-pointer transition-all border ${
                   isToday
-                    ? "border-blue-400 bg-blue-50"
-                    : "border-transparent bg-white hover:bg-gray-50"
+                    ? "border-blue-400 bg-blue-50 dark:bg-blue-950/40"
+                    : "border-transparent bg-white dark:bg-gray-800/40 hover:bg-gray-50 dark:hover:bg-gray-800"
                 } ${!isCurrentMonth ? "opacity-40" : ""}`}
               >
-                <p className={`text-xs font-bold mb-1 text-center ${isToday ? "text-blue-600" : "text-gray-600"}`}>
+                <p className={`text-xs font-bold mb-1 text-center ${isToday ? "text-blue-600 dark:text-blue-400" : "text-gray-600 dark:text-gray-400"}`}>
                   {day.getDate()}
                 </p>
                 <div className="flex flex-col gap-0.5">
@@ -382,7 +382,7 @@ export default function CalendarView() {
                     );
                   })}
                   {extra > 0 && (
-                    <p className="text-xs text-gray-400 text-center">+{extra} więcej</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 text-center">+{extra} więcej</p>
                   )}
                 </div>
               </div>
@@ -404,15 +404,15 @@ export default function CalendarView() {
   return (
     <div className="flex flex-col gap-4">
       {/* Header */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-4 flex flex-col gap-3">
+      <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl border border-white dark:border-gray-700 shadow-lg shadow-violet-100/30 dark:shadow-gray-900/30 p-4 flex flex-col gap-3">
         {/* View toggle */}
-        <div className="flex gap-1 bg-gray-100/80 rounded-xl p-1 self-start">
+        <div className="flex gap-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-xl p-1 self-start">
           {(["day", "week", "month"] as ViewMode[]).map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
               className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
-                view === v ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
+                view === v ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-sm" : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               }`}
             >
               {v === "day" ? "Dzień" : v === "week" ? "Tydzień" : "Miesiąc"}
@@ -424,21 +424,21 @@ export default function CalendarView() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate(-1)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-all font-bold"
+            className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-bold"
           >
             ‹
           </button>
-          <p className="flex-1 text-center text-sm font-semibold text-gray-700 capitalize">{navLabel()}</p>
+          <p className="flex-1 text-center text-sm font-semibold text-gray-700 dark:text-gray-200 capitalize">{navLabel()}</p>
           <button
             onClick={() => navigate(1)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-all font-bold"
+            className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-bold"
           >
             ›
           </button>
           {!isSameDay(currentDate, today) && (
             <button
               onClick={goToToday}
-              className="text-xs font-semibold text-blue-500 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-xl transition-all"
+              className="text-xs font-semibold text-blue-500 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-950/60 px-3 py-1.5 rounded-xl transition-all"
             >
               Dziś
             </button>
@@ -447,7 +447,7 @@ export default function CalendarView() {
       </div>
 
       {/* Calendar content */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-4">
+      <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl border border-white dark:border-gray-700 shadow-lg shadow-violet-100/30 dark:shadow-gray-900/30 p-4">
         {view === "day" && <DayView />}
         {view === "week" && <WeekView />}
         {view === "month" && <MonthView />}

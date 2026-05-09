@@ -82,7 +82,9 @@ function BarChart({ data, labels, barColor }: { data: number[]; labels: string[]
 
   return (
     <div>
-      <div className="text-right text-xs text-gray-400 mb-1">Łącznie: <span className="font-semibold text-gray-600">{total} pkt</span></div>
+      <div className="text-right text-xs text-gray-400 dark:text-gray-500 mb-1">
+        Łącznie: <span className="font-semibold text-gray-600 dark:text-gray-300">{total} pkt</span>
+      </div>
       <svg viewBox={`0 0 ${W} ${H + 18}`} className="w-full" preserveAspectRatio="none">
         {data.map((val, i) => {
           const bh = max > 0 ? (val / max) * H : 0;
@@ -128,29 +130,29 @@ function BalanceCard({
         <div className="flex items-center gap-2">
           <span className="text-3xl">{child.icon}</span>
           <div>
-            <p className="font-bold text-gray-800 text-lg">{child.name}</p>
-            <p className="text-xs text-gray-400">{child.email}</p>
+            <p className="font-bold text-gray-800 dark:text-gray-100 text-lg">{child.name}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">{child.email}</p>
           </div>
         </div>
         {isAdmin && (
           <button
             onClick={onSettle}
-            className="text-xs bg-white border border-gray-200 px-3 py-2 rounded-xl hover:bg-gray-50 transition-all font-medium"
+            className="text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-medium text-gray-700 dark:text-gray-300"
           >
             Rozlicz 💸
           </button>
         )}
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-          <p className="text-xs text-gray-400 mb-1">Aktualne saldo</p>
+        <div className="bg-white dark:bg-gray-800/80 rounded-xl p-3 text-center shadow-sm">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Aktualne saldo</p>
           <p className={`text-3xl font-bold ${child.textClass}`}>{balance.currentBalance ?? 0}</p>
-          <p className="text-xs text-gray-400">punktów</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">punktów</p>
         </div>
-        <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-          <p className="text-xs text-gray-400 mb-1">Łącznie zarobione</p>
+        <div className="bg-white dark:bg-gray-800/80 rounded-xl p-3 text-center shadow-sm">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Łącznie zarobione</p>
           <p className={`text-3xl font-bold ${child.textClass}`}>{balance.totalEarned ?? 0}</p>
-          <p className="text-xs text-gray-400">punktów</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">punktów</p>
         </div>
       </div>
     </div>
@@ -184,7 +186,7 @@ function ChartCard({
   }
 
   return (
-    <div className={`flex-1 bg-white border ${child.borderClass} rounded-2xl p-4 shadow-sm`}>
+    <div className={`flex-1 bg-white dark:bg-gray-800/60 border ${child.borderClass} rounded-2xl p-4 shadow-sm`}>
       <div className="flex items-center gap-2 mb-3">
         <span className="text-base">{child.icon}</span>
         <p className={`font-semibold text-sm ${child.textClass}`}>{child.name}</p>
@@ -248,10 +250,10 @@ export default function RewardsView() {
 
   // Build dynamic child config from family members
   const THEME_POOL = [
-    { icon: "🔥", barColor: "#f97316", cardBg: "bg-gradient-to-br from-orange-50 to-amber-50", textClass: "text-orange-700", borderClass: "border-orange-200" },
-    { icon: "✨", barColor: "#ec4899", cardBg: "bg-gradient-to-br from-pink-50 to-purple-50", textClass: "text-pink-700", borderClass: "border-pink-200" },
-    { icon: "⭐", barColor: "#8b5cf6", cardBg: "bg-gradient-to-br from-purple-50 to-blue-50", textClass: "text-purple-700", borderClass: "border-purple-200" },
-    { icon: "🌟", barColor: "#10b981", cardBg: "bg-gradient-to-br from-green-50 to-teal-50", textClass: "text-green-700", borderClass: "border-green-200" },
+    { icon: "🔥", barColor: "#f97316", cardBg: "bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/40 dark:to-amber-950/40", textClass: "text-orange-700 dark:text-orange-400", borderClass: "border-orange-200 dark:border-orange-800" },
+    { icon: "✨", barColor: "#ec4899", cardBg: "bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-950/40 dark:to-purple-950/40", textClass: "text-pink-700 dark:text-pink-400", borderClass: "border-pink-200 dark:border-pink-800" },
+    { icon: "⭐", barColor: "#8b5cf6", cardBg: "bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/40 dark:to-blue-950/40", textClass: "text-purple-700 dark:text-purple-400", borderClass: "border-purple-200 dark:border-purple-800" },
+    { icon: "🌟", barColor: "#10b981", cardBg: "bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-950/40 dark:to-teal-950/40", textClass: "text-green-700 dark:text-green-400", borderClass: "border-green-200 dark:border-green-800" },
   ];
 
   // Map known emails to fixed themes, others get sequential
@@ -280,13 +282,13 @@ export default function RewardsView() {
     <div className="flex flex-col gap-5">
       {/* Child-only toggle */}
       {!isAdmin && (
-        <div className="flex gap-1 bg-white/70 backdrop-blur-sm rounded-xl p-1 self-start border border-white shadow-sm">
+        <div className="flex gap-1 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm rounded-xl p-1 self-start border border-white dark:border-gray-700 shadow-sm">
           {(["own", "shared"] as SharedToggle[]).map((v) => (
             <button
               key={v}
               onClick={() => setViewToggle(v)}
               className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
-                viewToggle === v ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
+                viewToggle === v ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-sm" : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               }`}
             >
               {v === "own" ? "Tylko ja" : "Wspólny"}
@@ -309,16 +311,16 @@ export default function RewardsView() {
       </div>
 
       {/* Charts section */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-4 flex flex-col gap-4">
+      <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl border border-white dark:border-gray-700 shadow-lg shadow-violet-100/30 dark:shadow-gray-900/30 p-4 flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <p className="font-semibold text-gray-700 text-sm">📊 Zdobyte punkty</p>
-          <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+          <p className="font-semibold text-gray-700 dark:text-gray-200 text-sm">📊 Zdobyte punkty</p>
+          <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
             {(["week", "month", "year"] as ChartPeriod[]).map((p) => (
               <button
                 key={p}
                 onClick={() => setChartPeriod(p)}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                  chartPeriod === p ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
+                  chartPeriod === p ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-sm" : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                 }`}
               >
                 {chartPeriodLabel[p]}

@@ -159,8 +159,10 @@ function GoalFormContent() {
     }
   }
 
+  const inputCls = "border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/40 bg-gray-50/50 dark:bg-gray-800/50 transition-all";
+
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/40 overflow-hidden flex flex-col gap-0">
+    <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl border border-white dark:border-gray-700 shadow-lg shadow-violet-100/40 dark:shadow-gray-900/40 overflow-hidden flex flex-col gap-0">
 
       {/* Gradient header */}
       <div className="bg-gradient-to-r from-violet-500 to-blue-500 px-5 py-4 flex items-center gap-3">
@@ -177,21 +179,21 @@ function GoalFormContent() {
 
       {/* Edit mode banner */}
       {editId && (
-        <div className="flex items-start justify-between gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+        <div className="flex items-start justify-between gap-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl px-4 py-3">
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-blue-500 text-lg shrink-0">✏️</span>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Tryb edycji</p>
+              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Tryb edycji</p>
               {loadingEdit ? (
                 <p className="text-sm text-blue-400">Ładowanie...</p>
               ) : (
-                <p className="text-sm font-semibold text-blue-800 truncate">{editTitle}</p>
+                <p className="text-sm font-semibold text-blue-800 dark:text-blue-200 truncate">{editTitle}</p>
               )}
             </div>
           </div>
           <button
             onClick={cancelEdit}
-            className="shrink-0 text-xs text-blue-400 hover:text-blue-600 bg-white border border-blue-200 rounded-lg px-2.5 py-1.5 font-medium transition-all"
+            className="shrink-0 text-xs text-blue-400 hover:text-blue-600 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-lg px-2.5 py-1.5 font-medium transition-all"
           >
             Anuluj
           </button>
@@ -201,11 +203,11 @@ function GoalFormContent() {
       {/* Template picker — only in create mode */}
       {!editId && templates.length > 0 && (
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-gray-600 font-medium">🔄 Użyj poprzedniego celu jako szablon</label>
+          <label className="text-xs text-gray-600 dark:text-gray-400 font-medium">🔄 Użyj poprzedniego celu jako szablon</label>
           <select
             value={templateId}
             onChange={(e) => applyTemplate(e.target.value)}
-            className="border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-700 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100 bg-gray-50"
+            className={inputCls}
           >
             <option value="">— wybierz cel do skopiowania —</option>
             {templates.map((t) => (
@@ -230,21 +232,21 @@ function GoalFormContent() {
             placeholder="Nazwa zadania"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
+            className={inputCls}
           />
           <textarea
             placeholder="Opis (opcjonalnie)"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 resize-none h-20 bg-gray-50/50 transition-all"
+            className={`${inputCls} resize-none h-20`}
           />
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-600 font-medium">Wykonawca</label>
+              <label className="text-xs text-gray-600 dark:text-gray-400 font-medium">Wykonawca</label>
               <select
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
-                className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
+                className={inputCls}
               >
                 {children.map((c) => (
                   <option key={c.email} value={c.email}>{c.displayName}</option>
@@ -252,11 +254,11 @@ function GoalFormContent() {
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-600 font-medium">Priorytet</label>
+              <label className="text-xs text-gray-600 dark:text-gray-400 font-medium">Priorytet</label>
               <select
                 value={priority}
                 onChange={(e) => handlePriorityChange(e.target.value as Priority)}
-                className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
+                className={inputCls}
               >
                 <option value="normal">⚪ Zwykły</option>
                 <option value="important">🟡 Ważny</option>
@@ -268,7 +270,7 @@ function GoalFormContent() {
           {/* Two date fields */}
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-600 font-medium">
+              <label className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                 Data założenia <span className="text-red-400">*</span>
               </label>
               <input
@@ -276,11 +278,11 @@ function GoalFormContent() {
                 required
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
+                className={inputCls}
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-gray-600 font-medium">
+              <label className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                 Maks. data realizacji <span className="text-gray-400 font-normal">(opcjonalna)</span>
               </label>
               <input
@@ -288,7 +290,7 @@ function GoalFormContent() {
                 value={endDate}
                 min={dueDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
+                className={inputCls}
               />
             </div>
           </div>
@@ -299,7 +301,7 @@ function GoalFormContent() {
           )}
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-600 font-medium">
+            <label className="text-xs text-gray-600 dark:text-gray-400 font-medium">
               Punkty bazowe
               <span className="text-gray-400 font-normal ml-1">(podpowiedź: {PRIORITY_POINTS[priority]})</span>
             </label>
@@ -309,7 +311,7 @@ function GoalFormContent() {
               max={100}
               value={basePoints}
               onChange={(e) => setBasePoints(Number(e.target.value))}
-              className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
+              className={inputCls}
             />
           </div>
 
@@ -323,16 +325,16 @@ function GoalFormContent() {
                 className="sr-only"
               />
               <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
-                recurring ? "bg-blue-500 border-blue-500" : "border-gray-300 bg-white"
+                recurring ? "bg-blue-500 border-blue-500" : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
               }`}>
                 {recurring && <span className="text-white text-xs font-bold">✓</span>}
               </div>
             </div>
-            <span className="text-sm text-gray-700">🔁 Cel cykliczny</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">🔁 Cel cykliczny</span>
           </label>
 
           {error && (
-            <p className="text-red-500 text-sm bg-red-50 rounded-xl px-3 py-2">{error}</p>
+            <p className="text-red-500 text-sm bg-red-50 dark:bg-red-950/40 rounded-xl px-3 py-2">{error}</p>
           )}
           <button
             type="submit"
@@ -347,7 +349,7 @@ function GoalFormContent() {
             ) : editId ? "Zapisz zmiany" : "Dodaj cel"}
           </button>
           {success && (
-            <p className="text-green-600 text-sm text-center bg-green-50 rounded-xl py-2">
+            <p className="text-green-600 dark:text-green-400 text-sm text-center bg-green-50 dark:bg-green-950/40 rounded-xl py-2">
               {editId ? "✅ Cel zaktualizowany!" : "✅ Cel dodany!"}
             </p>
           )}
@@ -362,7 +364,7 @@ function GoalFormContent() {
 export default function GoalForm() {
   return (
     <Suspense fallback={
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 text-gray-400 text-sm">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 text-gray-400 text-sm">
         Ładowanie...
       </div>
     }>
