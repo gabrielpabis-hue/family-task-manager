@@ -7,8 +7,8 @@ import { useState } from "react";
 const CHANGELOG: { date: string; type: "feat" | "fix" | "chore"; label: string }[] = [
   { date: "2026-05-09", type: "chore", label: "Rebrand: FamilyTask → FamilyTiTask, aktualizacja podtytułu" },
   { date: "2026-05-09", type: "fix",   label: "GoalForm: lista dzieci dla superAdmin bez przypisanej rodziny" },
-  { date: "2026-05-09", type: "feat",  label: "Przycisk „Zrobiłem!", zdjęcie jako dowód, badge tytułu zakładki, tabela wyników" },
-  { date: "2026-05-09", type: "feat",  label: "Przycisk „Dodaj cel" w widoku dziennym kalendarza z wstępnie wypełnioną datą" },
+  { date: "2026-05-09", type: "feat",  label: "Przycisk 'Zrobiłem!', zdjęcie jako dowód, badge tytułu zakładki, tabela wyników" },
+  { date: "2026-05-09", type: "feat",  label: "Przycisk 'Dodaj cel' w widoku dziennym kalendarza z wstępnie wypełnioną datą" },
   { date: "2026-05-09", type: "feat",  label: "Panel przeterminowanych celów – przywróć na dziś/jutro, wyczyść, kolumny per dziecko" },
   { date: "2026-05-09", type: "feat",  label: "Dark mode – przełącznik Jasny / Ciemny / Systemowy z detekcją preferencji OS" },
   { date: "2026-05-09", type: "feat",  label: "Redesign UI – glassmorphism, gradient violet-blue, animacje floating, scrollbar" },
