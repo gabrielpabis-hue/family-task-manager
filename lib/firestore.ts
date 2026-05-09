@@ -24,6 +24,7 @@ export interface Task {
   isParentTask: boolean;
   recurring?: boolean;
   familyId?: string | null;
+  proofPhotoUrl?: string;
   createdAt: Date;
 }
 
@@ -88,8 +89,11 @@ export async function updateTask(
   await updateDoc(doc(db, "tasks", taskId), data as Record<string, unknown>);
 }
 
-export async function markTaskDone(taskId: string) {
-  await updateDoc(doc(db, "tasks", taskId), { status: "done" });
+export async function markTaskDone(taskId: string, proofPhotoUrl?: string) {
+  await updateDoc(doc(db, "tasks", taskId), {
+    status: "done",
+    ...(proofPhotoUrl ? { proofPhotoUrl } : {}),
+  });
 }
 
 // ── Approve & points ──────────────────────────────────────────────────────────

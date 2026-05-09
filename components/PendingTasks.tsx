@@ -49,6 +49,16 @@ export default function PendingTasks() {
               <p className="font-medium text-gray-700 dark:text-gray-200">{task.title}</p>
               <p className="text-xs text-gray-400 dark:text-gray-500">{task.assignedTo.split("@")[0]} · {task.basePoints} pkt bazowo</p>
             </div>
+            {task.proofPhotoUrl && (
+              <a href={task.proofPhotoUrl} target="_blank" rel="noopener noreferrer">
+                <img
+                  src={task.proofPhotoUrl}
+                  alt="Dowód wykonania"
+                  className="w-full max-h-48 object-cover rounded-xl border border-gray-200 dark:border-gray-600 hover:opacity-90 transition-opacity"
+                />
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 text-center">📸 Zdjęcie od dziecka – kliknij aby powiększyć</p>
+              </a>
+            )}
             <div className="flex gap-2">
               {QUALITY_OPTIONS.map((opt) => (
                 <button key={opt.value} onClick={() => handleApprove(task.id, opt.value)}
