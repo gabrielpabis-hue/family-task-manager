@@ -16,7 +16,7 @@ export interface Task {
   createdBy: string;
   priority: Priority;
   dueDate: string;
-  endDate?: string;
+  endDate?: string | null;
   status: TaskStatus;
   basePoints: number;
   qualityScore?: QualityScore | null;

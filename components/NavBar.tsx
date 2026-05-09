@@ -8,6 +8,7 @@ import { signOut } from "firebase/auth";
 import { useUser } from "@/lib/userContext";
 import { useTheme, Theme } from "@/lib/themeContext";
 import { getPendingRequestCount } from "@/lib/families";
+import DocsModal from "@/components/DocsModal";
 
 const links = [
   { href: "/calendar", label: "📅", full: "Kalendarz" },
@@ -24,7 +25,7 @@ const THEME_OPTIONS: { value: Theme; icon: string; title: string }[] = [
 export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAdmin, isSuperAdmin, userDoc } = useUser();
+  const { isAdmin, isSuperAdmin, userDoc, role } = useUser();
   const { theme, setTheme } = useTheme();
   const [pendingCount, setPendingCount] = useState(0);
 
@@ -115,6 +116,9 @@ export default function NavBar() {
               )}
             </Link>
           )}
+
+          {/* Docs – visible to parent / familyAdmin / superAdmin */}
+          {role !== "child" && <DocsModal />}
 
           {/* Avatar + logout */}
           <div className="flex items-center gap-2">

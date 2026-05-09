@@ -133,7 +133,7 @@ function GoalFormContent() {
           assignedTo,
           priority,
           dueDate,
-          endDate: endDate || undefined,
+          endDate: endDate || null,
           basePoints,
           recurring,
         });
@@ -150,7 +150,7 @@ function GoalFormContent() {
           createdBy: userDoc.email,
           priority,
           dueDate,
-          endDate: endDate || undefined,
+          endDate: endDate || null,
           basePoints,
           status: "pending",
           isParentTask: false,
