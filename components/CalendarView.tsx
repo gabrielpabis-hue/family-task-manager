@@ -207,6 +207,7 @@ function DeleteModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel:
 
 export default function CalendarView() {
   const { isAdmin, familyId, userDoc, loading: userLoading } = useUser();
+  const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<ViewMode>("week");
@@ -278,6 +279,7 @@ export default function CalendarView() {
   // ── Day view ──────────────────────────────────────────────────────────────
   function DayView() {
     const dayTasks = getTasksForDate(tasks, currentDate);
+    const dateParam = toDateStr(currentDate);
     return (
       <div className="flex flex-col gap-3">
         {dayTasks.length === 0 ? (
@@ -294,6 +296,14 @@ export default function CalendarView() {
           dayTasks.map((t) => (
             <TaskTile key={t.id} task={t} isAdmin={isAdmin} onDelete={setDeleteConfirmId} />
           ))
+        )}
+        {isAdmin && (
+          <button
+            onClick={() => router.push(`/goals?date=${dateParam}`)}
+            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-2xl border-2 border-dashed border-violet-300 dark:border-violet-700 text-violet-500 dark:text-violet-400 text-sm font-semibold hover:bg-violet-50 dark:hover:bg-violet-950/40 hover:border-violet-400 dark:hover:border-violet-600 transition-all"
+          >
+            ➕ Dodaj cel na ten dzień
+          </button>
         )}
       </div>
     );

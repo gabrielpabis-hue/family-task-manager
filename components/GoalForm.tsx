@@ -20,6 +20,7 @@ function GoalFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
+  const dateParam = searchParams.get("date");
   const { userDoc, familyMembers, familyId } = useUser();
   const children = familyMembers.filter((m) => m.role === "child");
 
@@ -27,7 +28,7 @@ function GoalFormContent() {
   const [description, setDescription] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
   const [priority, setPriority] = useState<Priority>("normal");
-  const [dueDate, setDueDate] = useState(todayStr());
+  const [dueDate, setDueDate] = useState(dateParam ?? todayStr());
   const [endDate, setEndDate] = useState("");
   const [basePoints, setBasePoints] = useState(PRIORITY_POINTS.normal);
   const [recurring, setRecurring] = useState(false);
@@ -73,7 +74,7 @@ function GoalFormContent() {
   function resetForm() {
     setTitle("");
     setDescription("");
-    setDueDate(todayStr());
+    setDueDate(dateParam ?? todayStr());
     setEndDate("");
     setPriority("normal");
     setBasePoints(PRIORITY_POINTS.normal);
@@ -176,6 +177,16 @@ function GoalFormContent() {
       </div>
 
       <div className="p-5 flex flex-col gap-4">
+
+      {/* Calendar date banner */}
+      {!editId && dateParam && (
+        <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl px-4 py-3">
+          <span className="text-blue-500 text-lg shrink-0">📅</span>
+          <p className="text-sm text-blue-700 dark:text-blue-300">
+            Data z kalendarza: <strong>{dateParam.split("-").reverse().join(".")}</strong>
+          </p>
+        </div>
+      )}
 
       {/* Edit mode banner */}
       {editId && (
