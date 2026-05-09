@@ -114,14 +114,21 @@ function UsersTab({ families }: { families: FamilyDoc[] }) {
 
       {users.map((u) => {
         const fam = families.find((f) => f.id === u.familyId);
+        const initial = u.displayName?.[0]?.toUpperCase() ?? "?";
+        const roleColors: Record<UserRole, string> = { superAdmin: "from-yellow-400 to-orange-400", familyAdmin: "from-violet-400 to-purple-400", parent: "from-blue-400 to-cyan-400", child: "from-pink-400 to-rose-400" };
         return (
-          <div key={u.email} className="bg-gray-50 rounded-xl p-4 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="font-semibold text-gray-800 text-sm">{u.displayName}</p>
-              <p className="text-xs text-gray-400 truncate">{u.email}</p>
-              <div className="flex gap-2 mt-1">
-                <span className="text-xs text-gray-500">{ROLE_LABELS[u.role]}</span>
-                {fam && <span className="text-xs text-blue-500">· {fam.name}</span>}
+          <div key={u.email} className="bg-gray-50/80 rounded-xl p-4 flex items-center justify-between gap-3 hover:bg-white hover:shadow-sm transition-all border border-transparent hover:border-gray-100">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${roleColors[u.role]} flex items-center justify-center text-white text-sm font-bold shrink-0`}>
+                {initial}
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-800 text-sm">{u.displayName}</p>
+                <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                <div className="flex gap-2 mt-0.5">
+                  <span className="text-xs text-gray-500">{ROLE_LABELS[u.role]}</span>
+                  {fam && <span className="text-xs text-violet-500">· {fam.name}</span>}
+                </div>
               </div>
             </div>
             {u.email !== userDoc?.email && (
@@ -578,13 +585,13 @@ export default function AdminPanel() {
   return (
     <div className="flex flex-col gap-4">
       {/* Tab bar */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-1 flex gap-1">
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-1.5 flex gap-1">
         {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => setActiveTab(t.key)}
             className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all relative ${
-              activeTab === t.key ? "bg-violet-500 text-white shadow-sm" : "text-gray-500 hover:bg-gray-50"
+              activeTab === t.key ? "bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-md shadow-violet-200/50" : "text-gray-500 hover:bg-gray-50"
             }`}
           >
             {t.label}
@@ -598,7 +605,7 @@ export default function AdminPanel() {
       </div>
 
       {/* Tab content */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-5">
         {activeTab === "users" && <UsersTab families={families} />}
         {activeTab === "families" && <FamiliesTab families={families} setFamilies={setFamilies} />}
         {activeTab === "requests" && <RequestsTab families={families} setFamilies={setFamilies} />}

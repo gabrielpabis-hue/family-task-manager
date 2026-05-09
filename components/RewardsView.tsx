@@ -280,13 +280,13 @@ export default function RewardsView() {
     <div className="flex flex-col gap-5">
       {/* Child-only toggle */}
       {!isAdmin && (
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 self-start">
+        <div className="flex gap-1 bg-white/70 backdrop-blur-sm rounded-xl p-1 self-start border border-white shadow-sm">
           {(["own", "shared"] as SharedToggle[]).map((v) => (
             <button
               key={v}
               onClick={() => setViewToggle(v)}
               className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
-                viewToggle === v ? "bg-white text-gray-800 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                viewToggle === v ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
               }`}
             >
               {v === "own" ? "Tylko ja" : "Wspólny"}
@@ -309,7 +309,7 @@ export default function RewardsView() {
       </div>
 
       {/* Charts section */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-4">
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-4 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <p className="font-semibold text-gray-700 text-sm">📊 Zdobyte punkty</p>
           <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
@@ -318,7 +318,7 @@ export default function RewardsView() {
                 key={p}
                 onClick={() => setChartPeriod(p)}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                  chartPeriod === p ? "bg-white text-gray-800 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                  chartPeriod === p ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
                 }`}
               >
                 {chartPeriodLabel[p]}

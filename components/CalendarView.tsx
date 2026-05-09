@@ -281,9 +281,14 @@ export default function CalendarView() {
     return (
       <div className="flex flex-col gap-3">
         {dayTasks.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-            <p className="text-3xl mb-2">📭</p>
-            <p className="text-gray-400 text-sm">Brak zadań na ten dzień</p>
+          <div className="bg-white/80 rounded-2xl border border-gray-100 p-10 text-center flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-100 to-blue-100 flex items-center justify-center text-3xl">
+              📭
+            </div>
+            <div>
+              <p className="font-semibold text-gray-500">Wolny dzień!</p>
+              <p className="text-gray-400 text-sm mt-0.5">Brak zadań na ten dzień</p>
+            </div>
           </div>
         ) : (
           dayTasks.map((t) => (
@@ -399,15 +404,15 @@ export default function CalendarView() {
   return (
     <div className="flex flex-col gap-4">
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-4 flex flex-col gap-3">
         {/* View toggle */}
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 self-start">
+        <div className="flex gap-1 bg-gray-100/80 rounded-xl p-1 self-start">
           {(["day", "week", "month"] as ViewMode[]).map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
               className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
-                view === v ? "bg-white text-gray-800 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                view === v ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
               }`}
             >
               {v === "day" ? "Dzień" : v === "week" ? "Tydzień" : "Miesiąc"}
@@ -442,7 +447,7 @@ export default function CalendarView() {
       </div>
 
       {/* Calendar content */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-4">
         {view === "day" && <DayView />}
         {view === "week" && <WeekView />}
         {view === "month" && <MonthView />}

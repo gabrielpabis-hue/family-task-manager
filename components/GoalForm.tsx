@@ -160,7 +160,20 @@ function GoalFormContent() {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col gap-4">
+    <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/40 overflow-hidden flex flex-col gap-0">
+
+      {/* Gradient header */}
+      <div className="bg-gradient-to-r from-violet-500 to-blue-500 px-5 py-4 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-lg">
+          {editId ? "✏️" : "🎯"}
+        </div>
+        <div>
+          <p className="font-bold text-white text-base">{editId ? "Edytuj cel" : "Nowy cel"}</p>
+          <p className="text-white/70 text-xs">{editId ? "Zmodyfikuj istniejący cel" : "Dodaj cel dla członka rodziny"}</p>
+        </div>
+      </div>
+
+      <div className="p-5 flex flex-col gap-4">
 
       {/* Edit mode banner */}
       {editId && (
@@ -211,22 +224,19 @@ function GoalFormContent() {
       )}
 
       <div>
-        <h2 className="font-semibold text-gray-800 mb-4 text-base">
-          {editId ? "✏️ Edytuj cel" : "➕ Nowy cel"}
-        </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             required
             placeholder="Nazwa zadania"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100"
+            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
           />
           <textarea
             placeholder="Opis (opcjonalnie)"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100 resize-none h-20"
+            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 resize-none h-20 bg-gray-50/50 transition-all"
           />
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
@@ -234,7 +244,7 @@ function GoalFormContent() {
               <select
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
-                className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400"
+                className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
               >
                 {children.map((c) => (
                   <option key={c.email} value={c.email}>{c.displayName}</option>
@@ -246,7 +256,7 @@ function GoalFormContent() {
               <select
                 value={priority}
                 onChange={(e) => handlePriorityChange(e.target.value as Priority)}
-                className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400"
+                className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
               >
                 <option value="normal">⚪ Zwykły</option>
                 <option value="important">🟡 Ważny</option>
@@ -266,7 +276,7 @@ function GoalFormContent() {
                 required
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400"
+                className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -278,7 +288,7 @@ function GoalFormContent() {
                 value={endDate}
                 min={dueDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400"
+                className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
               />
             </div>
           </div>
@@ -299,7 +309,7 @@ function GoalFormContent() {
               max={100}
               value={basePoints}
               onChange={(e) => setBasePoints(Number(e.target.value))}
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400"
+              className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 bg-gray-50/50 transition-all"
             />
           </div>
 
@@ -327,7 +337,7 @@ function GoalFormContent() {
           <button
             type="submit"
             disabled={saving || loadingEdit}
-            className="bg-blue-500 text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-blue-600 active:bg-blue-700 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            className="bg-gradient-to-r from-violet-500 to-blue-500 text-white rounded-xl py-3 text-sm font-bold hover:from-violet-600 hover:to-blue-600 active:scale-95 transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-md shadow-violet-200/60"
           >
             {saving ? (
               <>
@@ -343,6 +353,8 @@ function GoalFormContent() {
           )}
         </form>
       </div>
+
+      </div>{/* end p-5 wrapper */}
     </div>
   );
 }

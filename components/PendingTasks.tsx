@@ -33,14 +33,14 @@ export default function PendingTasks() {
   if (loading) return null;
   if (tasks.length === 0)
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 p-5">
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 p-5">
         <h2 className="font-semibold text-gray-700 mb-2">⏳ Oczekuje na ocenę</h2>
         <p className="text-gray-400 text-sm">Brak zadań do oceny.</p>
       </div>
     );
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+    <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white shadow-lg shadow-violet-100/30 shadow-sm p-5">
       <h2 className="font-semibold text-gray-700 mb-4">⏳ Oczekuje na ocenę</h2>
       <div className="flex flex-col gap-3">
         {tasks.map((task) => (
