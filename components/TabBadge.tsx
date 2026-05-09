@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useUser } from "@/lib/userContext";
 import { getAllTasks, getTasksForUser } from "@/lib/firestore";
 
-const BASE_TITLE = "FamilyTask";
+const BASE_TITLE = "FamilyTiTask";
 
 export default function TabBadge() {
   const { isAdmin, userDoc, familyId, loading } = useUser();

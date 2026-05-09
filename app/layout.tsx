@@ -3,8 +3,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/lib/themeContext";
 
 export const metadata: Metadata = {
-  title: "FamilyTask",
-  description: "Zarządzanie zadaniami rodziny",
+  title: "FamilyTiTask",
+  description: "Organizuj obowiązki i zadania Twojej rodziny",
 };
 
 // Inline script prevents flash of wrong theme before React hydrates

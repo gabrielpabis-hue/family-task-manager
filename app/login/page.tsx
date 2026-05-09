@@ -30,9 +30,9 @@ export default function LoginPage() {
             </div>
             <div className="text-center">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-blue-500 bg-clip-text text-transparent">
-                FamilyTask
+                FamilyTiTask
               </h1>
-              <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Organizuj życie rodziny razem</p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Organizuj obowiązki i zadania Twojej rodziny</p>
             </div>
           </div>
 

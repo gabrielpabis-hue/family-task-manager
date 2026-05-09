@@ -51,7 +51,7 @@ export default function NavBar() {
             🏠
           </div>
           <span className="font-bold text-sm bg-gradient-to-r from-violet-600 to-blue-500 bg-clip-text text-transparent hidden sm:block">
-            FamilyTask
+            FamilyTiTask
           </span>
         </Link>
 
