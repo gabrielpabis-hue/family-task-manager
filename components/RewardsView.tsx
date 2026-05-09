@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { auth } from "@/lib/firebase";
 import { getAllBalances, getBalance, settleBalance, getAllPointsHistory, PointEntry } from "@/lib/firestore";
-import { getUserRole } from "@/lib/roles";
+import { useUser } from "@/lib/userContext";
+import { UserDoc } from "@/lib/families";
 
 type SharedToggle = "own" | "shared";
 type ChartPeriod = "week" | "month" | "year";
@@ -13,40 +13,10 @@ interface ChildConfig {
   name: string;
   icon: string;
   barColor: string;
-  bgClass: string;
   cardBg: string;
   textClass: string;
   borderClass: string;
-  balanceBg: string;
-  balanceText: string;
 }
-
-const CHILDREN: ChildConfig[] = [
-  {
-    email: "igipabis@gmail.com",
-    name: "Igi",
-    icon: "🔥",
-    barColor: "#f97316",
-    bgClass: "bg-orange-50",
-    cardBg: "bg-gradient-to-br from-orange-50 to-amber-50",
-    textClass: "text-orange-700",
-    borderClass: "border-orange-200",
-    balanceBg: "bg-orange-100",
-    balanceText: "text-orange-800",
-  },
-  {
-    email: "gabik.pabik@gmail.com",
-    name: "Gabi",
-    icon: "✨",
-    barColor: "#ec4899",
-    bgClass: "bg-pink-50",
-    cardBg: "bg-gradient-to-br from-pink-50 to-purple-50",
-    textClass: "text-pink-700",
-    borderClass: "border-pink-200",
-    balanceBg: "bg-pink-100",
-    balanceText: "text-pink-800",
-  },
-];
 
 const WEEK_LABELS = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Nd"];
 const MONTH_LABELS_SHORT = ["Sty", "Lut", "Mar", "Kwi", "Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru"];
@@ -227,26 +197,22 @@ function ChartCard({
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function RewardsView() {
-  const [role, setRole] = useState<string | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const { isAdmin, isSuperAdmin, userDoc, familyMembers, familyId, loading: userLoading } = useUser();
   const [viewToggle, setViewToggle] = useState<SharedToggle>("own");
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("week");
   const [balances, setBalances] = useState<Record<string, Record<string, number>>>({});
   const [history, setHistory] = useState<PointEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const familyChildren = familyMembers.filter((m) => m.role === "child");
+
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged(async (user) => {
-      if (!user?.email) return;
-      setUserEmail(user.email);
-      const r = getUserRole(user.email);
-      setRole(r);
-
-      const [allBalances, allHistory] = await Promise.all([
-        getAllBalances(),
-        getAllPointsHistory(),
-      ]);
-
+    if (userLoading || !userDoc) return;
+    const childEmails = familyChildren.map((c) => c.email);
+    Promise.all([
+      getAllBalances(childEmails.length > 0 ? childEmails : undefined),
+      getAllPointsHistory(familyId ?? undefined),
+    ]).then(([allBalances, allHistory]) => {
       const balMap: Record<string, Record<string, number>> = {};
       for (const b of allBalances) {
         const bal = b as Record<string, unknown>;
@@ -259,12 +225,11 @@ export default function RewardsView() {
       setHistory(allHistory);
       setLoading(false);
     });
-    return () => unsub();
-  }, []);
+  }, [userLoading, userDoc, familyId]);
 
   async function handleSettle(email: string) {
-    if (!userEmail) return;
-    await settleBalance(email, userEmail);
+    if (!userDoc?.email) return;
+    await settleBalance(email, userDoc.email);
     setBalances((prev) => ({
       ...prev,
       [email]: { ...prev[email], currentBalance: 0 },
@@ -279,11 +244,31 @@ export default function RewardsView() {
     );
   }
 
-  const isAdmin = role === "admin";
   const showBoth = isAdmin || viewToggle === "shared";
+
+  // Build dynamic child config from family members
+  const THEME_POOL = [
+    { icon: "🔥", barColor: "#f97316", cardBg: "bg-gradient-to-br from-orange-50 to-amber-50", textClass: "text-orange-700", borderClass: "border-orange-200" },
+    { icon: "✨", barColor: "#ec4899", cardBg: "bg-gradient-to-br from-pink-50 to-purple-50", textClass: "text-pink-700", borderClass: "border-pink-200" },
+    { icon: "⭐", barColor: "#8b5cf6", cardBg: "bg-gradient-to-br from-purple-50 to-blue-50", textClass: "text-purple-700", borderClass: "border-purple-200" },
+    { icon: "🌟", barColor: "#10b981", cardBg: "bg-gradient-to-br from-green-50 to-teal-50", textClass: "text-green-700", borderClass: "border-green-200" },
+  ];
+
+  // Map known emails to fixed themes, others get sequential
+  const EMAIL_THEMES: Record<string, number> = {
+    "igipabis@gmail.com": 0,
+    "gabik.pabik@gmail.com": 1,
+  };
+
+  const childConfigs = familyChildren.map((child, i) => {
+    const themeIdx = EMAIL_THEMES[child.email] ?? (i % THEME_POOL.length);
+    const theme = THEME_POOL[themeIdx];
+    return { email: child.email, name: child.displayName, ...theme };
+  });
+
   const visibleChildren = showBoth
-    ? CHILDREN
-    : CHILDREN.filter((c) => c.email === userEmail);
+    ? childConfigs
+    : childConfigs.filter((c) => c.email === userDoc?.email);
 
   const chartPeriodLabel: Record<ChartPeriod, string> = {
     week: `Tydzień`,

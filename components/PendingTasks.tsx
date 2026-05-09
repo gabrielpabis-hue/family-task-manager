@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { auth } from "@/lib/firebase";
 import { getAllTasks, approveTask, Task } from "@/lib/firestore";
+import { useUser } from "@/lib/userContext";
 import { QualityScore } from "@/lib/points";
 
 const QUALITY_OPTIONS: { value: QualityScore; label: string }[] = [
@@ -12,20 +12,21 @@ const QUALITY_OPTIONS: { value: QualityScore; label: string }[] = [
 ];
 
 export default function PendingTasks() {
+  const { familyId, userDoc, loading: userLoading } = useUser();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllTasks().then((all) => {
+    if (userLoading || !userDoc) return;
+    getAllTasks(familyId ?? undefined).then((all) => {
       setTasks(all.filter((t) => t.status === "done"));
       setLoading(false);
     });
-  }, []);
+  }, [userLoading, userDoc, familyId]);
 
   async function handleApprove(taskId: string, score: QualityScore) {
-    const user = auth.currentUser;
-    if (!user?.email) return;
-    await approveTask(taskId, score, user.email);
+    if (!userDoc?.email) return;
+    await approveTask(taskId, score, userDoc.email);
     setTasks((prev) => prev.filter((t) => t.id !== taskId));
   }
 

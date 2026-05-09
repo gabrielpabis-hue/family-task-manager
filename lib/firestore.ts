@@ -1,6 +1,6 @@
 import {
   collection, addDoc, updateDoc, deleteDoc, doc, query, where,
-  orderBy, getDocs, getDoc, serverTimestamp, increment, setDoc, writeBatch,
+  getDocs, getDoc, serverTimestamp, increment, setDoc, writeBatch,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { QualityScore, calcFinalPoints } from "./points";
@@ -23,6 +23,7 @@ export interface Task {
   finalPoints?: number | null;
   isParentTask: boolean;
   recurring?: boolean;
+  familyId?: string | null;
   createdAt: Date;
 }
 
@@ -33,20 +34,41 @@ export interface PointEntry {
   awardedAt: Date;
 }
 
-export async function createTask(data: Omit<Task, "id" | "createdAt">) {
-  return addDoc(collection(db, "tasks"), { ...data, status: "pending", createdAt: serverTimestamp() });
+// ── Tasks ─────────────────────────────────────────────────────────────────────
+
+export async function createTask(
+  data: Omit<Task, "id" | "createdAt">,
+  familyId?: string | null
+) {
+  return addDoc(collection(db, "tasks"), {
+    ...data,
+    familyId: familyId ?? data.familyId ?? null,
+    status: "pending",
+    createdAt: serverTimestamp(),
+  });
 }
 
-export async function getTasksForUser(email: string): Promise<Task[]> {
-  const q = query(collection(db, "tasks"), where("assignedTo", "==", email), orderBy("dueDate", "asc"));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Task));
+export async function getTasksForUser(
+  email: string,
+  familyId?: string | null
+): Promise<Task[]> {
+  const col = collection(db, "tasks");
+  const snap = familyId
+    ? await getDocs(query(col, where("familyId", "==", familyId), where("assignedTo", "==", email)))
+    : await getDocs(query(col, where("assignedTo", "==", email)));
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() } as Task))
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 }
 
-export async function getAllTasks(): Promise<Task[]> {
-  const q = query(collection(db, "tasks"), orderBy("dueDate", "asc"));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Task));
+export async function getAllTasks(familyId?: string | null): Promise<Task[]> {
+  const col = collection(db, "tasks");
+  const snap = familyId
+    ? await getDocs(query(col, where("familyId", "==", familyId)))
+    : await getDocs(col);
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() } as Task))
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 }
 
 export async function deleteTask(taskId: string) {
@@ -59,7 +81,10 @@ export async function getTask(taskId: string): Promise<Task | null> {
   return { id: snap.id, ...snap.data() } as Task;
 }
 
-export async function updateTask(taskId: string, data: Partial<Omit<Task, "id" | "createdAt">>) {
+export async function updateTask(
+  taskId: string,
+  data: Partial<Omit<Task, "id" | "createdAt">>
+) {
   await updateDoc(doc(db, "tasks", taskId), data as Record<string, unknown>);
 }
 
@@ -67,7 +92,13 @@ export async function markTaskDone(taskId: string) {
   await updateDoc(doc(db, "tasks", taskId), { status: "done" });
 }
 
-export async function approveTask(taskId: string, qualityScore: QualityScore, approvedBy: string) {
+// ── Approve & points ──────────────────────────────────────────────────────────
+
+export async function approveTask(
+  taskId: string,
+  qualityScore: QualityScore,
+  approvedBy: string
+) {
   const taskSnap = await getDoc(doc(db, "tasks", taskId));
   const task = taskSnap.data() as Task;
   const finalPoints = calcFinalPoints(task.basePoints, qualityScore);
@@ -75,34 +106,55 @@ export async function approveTask(taskId: string, qualityScore: QualityScore, ap
   await updateDoc(doc(db, "tasks", taskId), { status: "approved", qualityScore, finalPoints });
 
   await addDoc(collection(db, "pointsHistory"), {
-    userId: task.assignedTo, taskId, points: finalPoints,
-    qualityScore, awardedBy: approvedBy, awardedAt: serverTimestamp(), settled: false,
+    userId: task.assignedTo,
+    taskId,
+    points: finalPoints,
+    qualityScore,
+    awardedBy: approvedBy,
+    awardedAt: serverTimestamp(),
+    settled: false,
+    familyId: task.familyId ?? null,
   });
 
   const balanceRef = doc(db, "balances", task.assignedTo);
   try {
-    await updateDoc(balanceRef, { currentBalance: increment(finalPoints), totalEarned: increment(finalPoints) });
+    await updateDoc(balanceRef, {
+      currentBalance: increment(finalPoints),
+      totalEarned: increment(finalPoints),
+    });
   } catch {
-    await setDoc(balanceRef, { currentBalance: finalPoints, totalEarned: finalPoints, lastSettledAt: null });
+    await setDoc(balanceRef, {
+      currentBalance: finalPoints,
+      totalEarned: finalPoints,
+      lastSettledAt: null,
+    });
   }
 }
+
+// ── Balances ──────────────────────────────────────────────────────────────────
 
 export async function getBalance(email: string) {
   const snap = await getDoc(doc(db, "balances", email));
   return snap.exists() ? snap.data() : { currentBalance: 0, totalEarned: 0 };
 }
 
-export async function getAllBalances() {
-  const children = ["igipabis@gmail.com", "gabik.pabik@gmail.com"];
-  return Promise.all(children.map(async (email) => {
-    const data = await getBalance(email);
-    return { email, ...data };
-  }));
+export async function getAllBalances(emails?: string[]) {
+  const targets = emails ?? ["igipabis@gmail.com", "gabik.pabik@gmail.com"];
+  return Promise.all(
+    targets.map(async (email) => {
+      const data = await getBalance(email);
+      return { email, ...data };
+    })
+  );
 }
 
 export async function settleBalance(email: string, settledBy: string) {
   const balanceRef = doc(db, "balances", email);
-  const q = query(collection(db, "pointsHistory"), where("userId", "==", email), where("settled", "==", false));
+  const q = query(
+    collection(db, "pointsHistory"),
+    where("userId", "==", email),
+    where("settled", "==", false)
+  );
   const snap = await getDocs(q);
   const batch = writeBatch(db);
   snap.docs.forEach((d) => batch.update(d.ref, { settled: true }));
@@ -110,8 +162,13 @@ export async function settleBalance(email: string, settledBy: string) {
   await batch.commit();
 }
 
-export async function getAllPointsHistory(): Promise<PointEntry[]> {
-  const snap = await getDocs(collection(db, "pointsHistory"));
+// ── Points history ────────────────────────────────────────────────────────────
+
+export async function getAllPointsHistory(familyId?: string | null): Promise<PointEntry[]> {
+  const col = collection(db, "pointsHistory");
+  const snap = familyId
+    ? await getDocs(query(col, where("familyId", "==", familyId)))
+    : await getDocs(col);
   return snap.docs
     .map((d) => {
       const data = d.data();

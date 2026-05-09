@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
 import { getAllTasks, getTasksForUser, deleteTask, Task } from "@/lib/firestore";
-import { getUserRole } from "@/lib/roles";
+import { useUser } from "@/lib/userContext";
 
 type ViewMode = "day" | "week" | "month";
 
@@ -207,9 +206,9 @@ function DeleteModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel:
 }
 
 export default function CalendarView() {
+  const { isAdmin, familyId, userDoc, loading: userLoading } = useUser();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<string | null>(null);
   const [view, setView] = useState<ViewMode>("week");
   const [currentDate, setCurrentDate] = useState(() => {
     const d = new Date();
@@ -222,16 +221,16 @@ export default function CalendarView() {
   today.setHours(0, 0, 0, 0);
 
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged(async (user) => {
-      if (!user?.email) return;
-      const r = getUserRole(user.email);
-      setRole(r);
-      const data = r === "admin" ? await getAllTasks() : await getTasksForUser(user.email);
+    if (userLoading || !userDoc) return;
+    const load = async () => {
+      const data = isAdmin
+        ? await getAllTasks(familyId)
+        : await getTasksForUser(userDoc.email, familyId ?? undefined);
       setTasks(data);
       setLoading(false);
-    });
-    return () => unsub();
-  }, []);
+    };
+    load();
+  }, [userLoading, userDoc, isAdmin, familyId]);
 
   async function confirmDelete() {
     if (!deleteConfirmId) return;
@@ -275,7 +274,6 @@ export default function CalendarView() {
     return `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
   }
 
-  const isAdmin = role === "admin";
 
   // ── Day view ──────────────────────────────────────────────────────────────
   function DayView() {

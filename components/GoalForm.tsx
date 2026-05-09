@@ -2,13 +2,8 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { auth } from "@/lib/firebase";
 import { createTask, getAllTasks, getTask, updateTask, Priority, Task } from "@/lib/firestore";
-
-const CHILDREN = [
-  { email: "igipabis@gmail.com", name: "Igi" },
-  { email: "gabik.pabik@gmail.com", name: "Gabi" },
-];
+import { useUser } from "@/lib/userContext";
 
 const PRIORITY_POINTS: Record<Priority, number> = {
   normal: 5,
@@ -25,10 +20,12 @@ function GoalFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
+  const { userDoc, familyMembers, familyId } = useUser();
+  const children = familyMembers.filter((m) => m.role === "child");
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [assignedTo, setAssignedTo] = useState(CHILDREN[0].email);
+  const [assignedTo, setAssignedTo] = useState("");
   const [priority, setPriority] = useState<Priority>("normal");
   const [dueDate, setDueDate] = useState(todayStr());
   const [endDate, setEndDate] = useState("");
@@ -44,8 +41,12 @@ function GoalFormContent() {
   const [templateId, setTemplateId] = useState("");
 
   useEffect(() => {
-    getAllTasks().then(setTemplates).catch(() => {});
-  }, []);
+    if (children.length > 0 && !assignedTo) setAssignedTo(children[0].email);
+  }, [children]);
+
+  useEffect(() => {
+    getAllTasks(familyId ?? undefined).then(setTemplates).catch(() => {});
+  }, [familyId]);
 
   useEffect(() => {
     if (!editId) {
@@ -111,8 +112,7 @@ function GoalFormContent() {
     setSaving(true);
     setError("");
     try {
-      const user = auth.currentUser;
-      if (!user?.email) throw new Error("Brak użytkownika");
+      if (!userDoc?.email) throw new Error("Brak użytkownika");
 
       if (editId) {
         await updateTask(editId, {
@@ -135,7 +135,7 @@ function GoalFormContent() {
           title,
           description,
           assignedTo,
-          createdBy: user.email,
+          createdBy: userDoc.email,
           priority,
           dueDate,
           endDate: endDate || undefined,
@@ -143,6 +143,7 @@ function GoalFormContent() {
           status: "pending",
           isParentTask: false,
           recurring,
+          familyId: familyId ?? null,
           qualityScore: null,
           finalPoints: null,
         });
@@ -235,8 +236,8 @@ function GoalFormContent() {
                 onChange={(e) => setAssignedTo(e.target.value)}
                 className="border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400"
               >
-                {CHILDREN.map((c) => (
-                  <option key={c.email} value={c.email}>{c.name}</option>
+                {children.map((c) => (
+                  <option key={c.email} value={c.email}>{c.displayName}</option>
                 ))}
               </select>
             </div>
