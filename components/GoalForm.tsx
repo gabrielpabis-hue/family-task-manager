@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createTask, getAllTasks, getTask, updateTask, Priority, Task } from "@/lib/firestore";
+import { getAllUsers, UserDoc } from "@/lib/families";
 import { useUser } from "@/lib/userContext";
 
 const PRIORITY_POINTS: Record<Priority, number> = {
@@ -21,8 +22,18 @@ function GoalFormContent() {
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
   const dateParam = searchParams.get("date");
-  const { userDoc, familyMembers, familyId } = useUser();
-  const children = familyMembers.filter((m) => m.role === "child");
+  const { userDoc, familyMembers, familyId, isAdmin, loading: userLoading } = useUser();
+  const contextChildren = familyMembers.filter((m) => m.role === "child");
+
+  // Fallback for admins without familyId (e.g. superAdmin) – load all children from Firestore
+  const [fallbackChildren, setFallbackChildren] = useState<UserDoc[]>([]);
+  useEffect(() => {
+    if (!userLoading && isAdmin && contextChildren.length === 0) {
+      getAllUsers().then((users) => setFallbackChildren(users.filter((u) => u.role === "child")));
+    }
+  }, [userLoading, isAdmin, contextChildren.length]);
+
+  const children = contextChildren.length > 0 ? contextChildren : fallbackChildren;
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
